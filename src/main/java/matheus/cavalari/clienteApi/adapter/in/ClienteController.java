@@ -1,6 +1,7 @@
 package matheus.cavalari.clienteApi.adapter.in;
 
 import matheus.cavalari.clienteApi.application.IClienteService;
+import matheus.cavalari.clienteApi.application.exception.ClienteJaExisteException;
 import matheus.cavalari.clienteApi.application.exception.ClienteNaoEncontradoException;
 import matheus.cavalari.clienteApi.domain.Cliente;
 import org.slf4j.Logger;
@@ -21,22 +22,22 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<?> getClienteByCpf(@PathVariable String cpf) {
+    @GetMapping("/matricula/{matricula}")
+    public ResponseEntity<?> getClienteByMatricula(@PathVariable String matricula) {
         try {
-            Cliente cliente = clienteService.getClienteByCpf(cpf);
+            Cliente cliente = clienteService.getClienteByMatricula(matricula);
             if (cliente != null) {
                 return ResponseEntity.ok(cliente);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para o CPF informado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para a Matricula informado");
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("CPF inválido: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Matrícula inválido: " + e.getMessage());
         } catch (ClienteNaoEncontradoException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para o CPF informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para a matricula informado");
         } catch (Exception e) {
-            logger.error("Erro ao obter o cliente pelo CPF", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao obter o cliente pelo CPF");
+            logger.error("Erro ao obter o cliente pelo matricula", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao obter o cliente pelo matricula");
         }
     }
 
@@ -45,6 +46,8 @@ public class ClienteController {
         try {
             Cliente cliente = clienteService.armazenarCliente(clienteDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
+        } catch (ClienteJaExisteException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar o cliente");
         }

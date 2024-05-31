@@ -1,6 +1,7 @@
 package matheus.cavalari.clienteApi.application;
 
 import matheus.cavalari.clienteApi.adapter.out.ClienteRepository;
+import matheus.cavalari.clienteApi.application.exception.ClienteJaExisteException;
 import matheus.cavalari.clienteApi.application.exception.ClienteNaoEncontradoException;
 import matheus.cavalari.clienteApi.domain.Cliente;
 import org.springframework.stereotype.Service;
@@ -18,51 +19,47 @@ public class ClienteService implements IClienteService {
         this.clientes = new HashMap<>();
         List<Cliente> clienteList = clienteRepository.findAll();
         for (Cliente cliente : clienteList) {
-            clientes.put(cliente.getCpf(), cliente);
+            clientes.put(cliente.getMatricula(), cliente);
         }
         // Adicionar clientes de exemplo
-        clientes.put("111.111.111-11", Cliente.builder()
+        clientes.put("111111111", Cliente.builder()
                 .id(1L)
-                .cpf("111.111.111-11")
+                .matricula("111111111")
                 .nome("Michel Jordan")
                 .build());
-        clientes.put("222.222.222-22", Cliente.builder()
+        clientes.put("222222222", Cliente.builder()
                 .id(2L)
-                .cpf("222.222.222-22")
+                .matricula("222222222")
                 .nome("Lebron James")
                 .build());
-        clientes.put("333.333.333-33", Cliente.builder()
+        clientes.put("333333333", Cliente.builder()
                 .id(3L)
-                .cpf("333.333.333-33")
+                .matricula("333333333")
                 .nome("Maradonna")
                 .build());
     }
 
     @Override
-    public Cliente  getClienteByCpf(String cpf) {
-        if (!verificarCPF(cpf)) {
-            throw new IllegalArgumentException("O formato válido é  DDD.DDD.DDD-DD");
-        }
-        Cliente cliente = buscarCliente(cpf);
+    public Cliente  getClienteByMatricula(String matricula) {
+        Cliente cliente = buscarCliente(matricula);
         if (cliente == null) {
-            throw new ClienteNaoEncontradoException("Cliente não encontrado para o CPF informado");
+            throw new ClienteNaoEncontradoException("Cliente não encontrado para a Matricula informada");
         }
 
         return cliente;
     }
 
     @Override
-    public Cliente buscarCliente(String cpf) {
-        return clientes.get(cpf);
-    }
-
-    public boolean verificarCPF(String cpf) {
-        return cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}");
+    public Cliente buscarCliente(String matricula) {
+        return clientes.get(matricula);
     }
 
     @Override
     public Cliente armazenarCliente(Cliente cliente) {
-        clientes.put(cliente.getCpf(), cliente);
+        if (clientes.containsKey(cliente.getMatricula())) {
+            throw new ClienteJaExisteException("Cliente com Matricula " + cliente.getMatricula() + " já existe.");
+        }
+        clientes.put(cliente.getMatricula(), cliente);
         return cliente;
     }
 }
