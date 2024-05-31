@@ -22,22 +22,22 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    @GetMapping("/matricula/{matricula}")
-    public ResponseEntity<?> getClienteByMatricula(@PathVariable String matricula) {
+    @GetMapping("/login")
+    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha) {
         try {
-            Cliente cliente = clienteService.getClienteByMatricula(matricula);
+            Cliente cliente = clienteService.getClienteByEmailAndSenha(email, senha);
             if (cliente != null) {
                 return ResponseEntity.ok(cliente);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para a Matricula informado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para o email e senha informados");
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Matrícula inválido: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Email ou senha inválidos: " + e.getMessage());
         } catch (ClienteNaoEncontradoException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para a matricula informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado para o email e senha informados");
         } catch (Exception e) {
-            logger.error("Erro ao obter o cliente pelo matricula", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao obter o cliente pelo matricula");
+            logger.error("Erro ao obter o cliente pelo email e senha", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao obter o cliente pelo email e senha");
         }
     }
 

@@ -39,14 +39,11 @@ public class ClienteService implements IClienteService {
                 .build());
     }
 
-    @Override
-    public Cliente  getClienteByMatricula(String matricula) {
-        Cliente cliente = buscarCliente(matricula);
-        if (cliente == null) {
-            throw new ClienteNaoEncontradoException("Cliente não encontrado para a Matricula informada");
-        }
-
-        return cliente;
+    public Cliente getClienteByEmailAndSenha(String email, String senha) {
+        return clientes.values().stream()
+                .filter(cliente -> cliente.getEmail().equals(email) && cliente.getSenha().equals(senha))
+                .findFirst()
+                .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado para o email e senha informados"));
     }
 
     @Override

@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.info.Info;
                         name = "Matheus",
                         email = "matheuscav@hotmail.com"
                 ),
-                description = "O microserviço Identificação Cliente gerencia informações dos clientes, como busca por CPF e criação clientes.",
+                description = "O Microserviço Cliente Api, é responsável pela criação de usuário e pela busca por matrícula",
                 title = "Cliente API",
                 version = "1.0"
         )
