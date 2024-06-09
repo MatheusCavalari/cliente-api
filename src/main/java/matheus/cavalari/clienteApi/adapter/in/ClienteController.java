@@ -4,6 +4,7 @@ import matheus.cavalari.clienteApi.application.IClienteService;
 import matheus.cavalari.clienteApi.application.exception.ClienteJaExisteException;
 import matheus.cavalari.clienteApi.application.exception.ClienteNaoEncontradoException;
 import matheus.cavalari.clienteApi.domain.Cliente;
+import matheus.cavalari.clienteApi.domain.LoginRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,10 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            Cliente cliente = clienteService.getClienteByEmailAndSenha(email, senha);
+            Cliente cliente = clienteService.getClienteByEmailAndSenha(loginRequest.getEmail(), loginRequest.getSenha());
             if (cliente != null) {
                 return ResponseEntity.ok(cliente);
             } else {

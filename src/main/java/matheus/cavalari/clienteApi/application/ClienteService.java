@@ -22,34 +22,43 @@ public class ClienteService implements IClienteService {
             clientes.put(cliente.getMatricula(), cliente);
         }
         // Adicionar clientes de exemplo
-        clientes.put("111111111", Cliente.builder()
+        clientes.put("12345678", Cliente.builder()
                 .id(1L)
-                .matricula("111111111")
+                .matricula("12345678")
                 .nome("Michel Jordan")
+                .email("michael@hotmail.com")
+                .senha("12345678")
                 .build());
-        clientes.put("222222222", Cliente.builder()
+        clientes.put("87654321", Cliente.builder()
                 .id(2L)
-                .matricula("222222222")
+                .matricula("87654321")
                 .nome("Lebron James")
+                .email("james@hotmail.com")
+                .senha("87654321")
                 .build());
-        clientes.put("333333333", Cliente.builder()
+        clientes.put("12348765", Cliente.builder()
                 .id(3L)
-                .matricula("333333333")
+                .matricula("12348765")
                 .nome("Maradonna")
+                .email("madonna@hotmail.com")
+                .senha("12348765")
                 .build());
     }
 
     public Cliente getClienteByEmailAndSenha(String email, String senha) {
-        return clientes.values().stream()
-                .filter(cliente -> cliente.getEmail().equals(email) && cliente.getSenha().equals(senha))
-                .findFirst()
-                .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado para o email e senha informados"));
+        if (email == null || senha == null) {
+            throw new ClienteNaoEncontradoException("Email ou senha não podem ser nulos");
+        }
+
+        for (Cliente cliente : clientes.values()) {
+            if (email.equals(cliente.getEmail()) && senha.equals(cliente.getSenha())) {
+                return cliente;
+            }
+        }
+
+        throw new ClienteNaoEncontradoException("Cliente não encontrado para o email e senha informados");
     }
 
-    @Override
-    public Cliente buscarCliente(String matricula) {
-        return clientes.get(matricula);
-    }
 
     @Override
     public Cliente armazenarCliente(Cliente cliente) {
